@@ -1,0 +1,4 @@
+change bills in user schema from list to dict. (not sure if its needed mb only for searching convinence)
+finish product purchase function
+finish routs protection
+create stub files for all modules

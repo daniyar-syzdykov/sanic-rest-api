@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+sanic = "*"
+sanic-jwt = "*"
+marshmallow = "*"
+sqlalchemy = "*"
+sqlalchemy-utils = "*"
+asyncpg = "*"
+passlib = "*"
+autopep8 = "*"
+requests = "*"
+pytest = "*"
+sanic-testing = "*"
+pytest-asyncio = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.10"
