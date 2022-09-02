@@ -1,17 +1,28 @@
-import pytest
+import json
+import random
 from routes import *
 from sanic import Sanic, response
 from routes import api
-from sanic_testing import TestManager
 from sanic_jwt import Initialize
 from database.utils import async_db_session as session
 from views import store_token, get_token, authenticate, retrieve_user
-# from server import app as sanic_app, session
+from string import ascii_lowercase, digits
+import database as db
+from database.schemas import *
+
+HEADERS = {
+    'Accept': '*/*',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Content-Length': '57',
+    'Content-Type': 'application/json',
+    'Host': 'httpbin.org',
+    'User-Agent': 'PostmanRuntime/7.29.2',
+    'X-Amzn-Trace-Id': 'Root=1-6310be89-06518def47f6b54d6b98a339'
+}
 
 
 # @pytest.fixture
-def app():
-    print('initialaizing pytest fixture')
+def init_app():
     sanic_app = Sanic('testing')
     sanic_app.blueprint(api)
     Initialize(sanic_app,
@@ -29,4 +40,13 @@ def app():
 
     return sanic_app
 
-sanic_app = app()
+sanic_app = init_app()
+
+def random_user_credantials() -> tuple[str, str]:
+    username = ''
+    password = ''
+    n = random.randrange(1, 15)
+    for i in range(n):
+        username += random.choice(ascii_lowercase + digits)
+        password += random.choice(ascii_lowercase + digits)
+    return (username, password)

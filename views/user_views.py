@@ -7,13 +7,13 @@ from .utils import *
 from sanic.exceptions import *
 
 
-# @inject_user()
-# @protected()
+@inject_user()
+@protected()
 async def get_all_users(request, user: db.User = None):
-    # print('user ------>', user)
-    # if not user['is_admin'] or not user['is_active']:
-    #     raise Forbidden('You do not have permission to views this page')
-        # return json({'success': False, 'message': 'you do not have permission'})
+    print('user ------>', user)
+    if not user['is_admin'] or not user['is_active']:
+        raise Forbidden('You do not have permission to views this page')
+        return json({'success': False, 'message': 'you do not have permission'})
 
     result = await db.User.get_all_users()
     if not result:
@@ -23,14 +23,14 @@ async def get_all_users(request, user: db.User = None):
     return json(ret)
 
 
-# @inject_user()
-# @protected()
+@inject_user()
+@protected()
 async def get_user_by_id(requset, user_id, user: db.User=None):
-    # if user['id'] == user_id and not user['is_active']:
-    #     return http_not_activated(user['uuid'])
+    if user['id'] == user_id and not user['is_active']:
+        return http_not_activated(user['uuid'])
 
-    # if user['id'] != user_id and user['is_admin'] == False:
-    #     return http_forbidden()
+    if user['id'] != user_id and user['is_admin'] == False:
+        return http_forbidden()
 
     result: db.User = await db.User.get_user_by_id(user_id)
     if not result:

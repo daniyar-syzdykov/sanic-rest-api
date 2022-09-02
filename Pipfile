@@ -16,6 +16,7 @@ requests = "*"
 pytest = "*"
 sanic-testing = "*"
 pytest-asyncio = "*"
+greenlet = "*"
 
 [dev-packages]
 
