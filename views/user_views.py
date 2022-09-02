@@ -7,13 +7,12 @@ from .utils import *
 from sanic.exceptions import *
 
 
-@inject_user()
-@protected()
+# @inject_user()
+# @protected()
 async def get_all_users(request, user: db.User = None):
-    print('user ------>', user)
-    if not user['is_admin'] or not user['is_active']:
-        raise Forbidden('You do not have permission to views this page')
-        return json({'success': False, 'message': 'you do not have permission'})
+    # if not user['is_admin'] or not user['is_active']:
+    #     raise Forbidden('You do not have permission to views this page')
+    #     # return json({'success': False, 'message': 'you do not have permission'})
 
     result = await db.User.get_all_users()
     if not result:
@@ -46,7 +45,6 @@ async def create_user(request: Request):
     if username is None or password is None:
         raise BadRequest('Pls provide valid credantials')
     result = await db.User.create(username=username, password=password)
-    print(result)
 
     user_id = result['id']
     bill_result = await db.Bill.create(user_id=user_id, balance=10000000)

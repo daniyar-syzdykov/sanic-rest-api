@@ -16,8 +16,6 @@ async def authenticate(request: Request):
 
     user_json = user_schema.dump(user)
     user_json['user_id'] = user_json['id']
-    print('user_json ----------> ', user_json)
-    print(user.password)
 
     if not username or not password:
         raise jwt_exceptions.AuthenticationFailed('User not found.')
@@ -34,10 +32,8 @@ async def store_token(request, user_id, refresh_token):
 
 async def get_token(request, user_id, refresh_token):
     result = await db.User.get_refresh_token(user_id)
-    print(result)
 
 async def retrieve_user(request: Request, payload, *args, **kwargs):
-    print(payload)
     if payload:
         user_id = payload.get('user_id', None)
         user = await db.User.get_user_by_id(user_id)

@@ -67,7 +67,6 @@ async def test_get_all_users():
 async def test_get_all_users_without_permission():
     request, response = await sanic_app.asgi_client.get('/api/users', headers=HEADERS)
     response_json = json.loads(response.body)
-    print(response_json)
 
     assert request.method.lower() == 'get'
     assert len(response_json) != 0

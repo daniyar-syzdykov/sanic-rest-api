@@ -16,6 +16,7 @@ api.add_route(delete_user, '/users/delete/<id:int>', methods=('DELETE', ))
 # Bill routes
 api.add_route(get_all_bills, '/bills', methods=('GET', ))
 api.add_route(create_bill, '/bills', methods=('POST', ))
+api.add_route(add_funds, '/bills/add/', methods=('POST', ))
 api.add_route(get_bill_by_id, '/bills/<id:int>', methods=('GET', ))
 # api.add_route(update_bill_balance, '/bills/<id:int>', methods=('PATCH', ))
 # api.add_route(delete_bill, '/bills/<id:int>', methods=('DELETE', ))

@@ -7,7 +7,6 @@ from sqlalchemy_utils import PasswordType
 from sqlalchemy.dialects.postgresql import UUID
 from . import Base
 from .utils import async_db_session as session
-from .exception import *
 from sanic.exceptions import *
 
 
@@ -49,7 +48,7 @@ class DBMixin:
         query = select(cls).where(cls.id == id)
         result = await session.execute(query)
         if result is None:
-            return {'success': False, 'code': 400}
+            return None
         result = result.one_or_none()
         await session.close()
         return result[0] if result else None
@@ -97,7 +96,6 @@ class User(Base, DBMixin):
 
     @classmethod
     async def get_by_username(cls, username):
-        print('--------------------------------- getting user by username ------------------------')
         query = select(User).where(
             User.username == username).options(joinedload(User.bills).joinedload(Bill.transactions))
         result = await session.execute(query)
@@ -115,7 +113,6 @@ class User(Base, DBMixin):
         result = await session.execute(_query)
         result = result.unique()
         result = [i[0] for i in result.all()]
-        print('result ------> ', result)
         await session.close()
         return result
 

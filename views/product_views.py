@@ -7,11 +7,11 @@ from .utils import *
 from sanic.exceptions import *
 
 
-# @inject_user()
-# @protected()
+@inject_user()
+@protected()
 async def create_product(request: Request, user=None):
-    # if not user['is_admin']:
-    #     return json({'success': False, 'message': 'you do not have permission'})
+    if not user['is_admin']:
+        return json({'success': False, 'message': 'you do not have permission'})
 
     data = request.json
     result = await db.Product.create(name=data['name'], description=data['description'], price=data['price'])
@@ -46,7 +46,6 @@ def find_bill(bills: list[db.Bill], target_bill: int) -> db.Bill | None:
     return None
 
 
-
 @inject_user()
 @protected()
 async def buy_product(request: Request, user: db.User, product_id):
@@ -58,7 +57,9 @@ async def buy_product(request: Request, user: db.User, product_id):
         return json({'success': False, 'message': 'no bill provided'})
 
     bill = find_bill(user['bills'], bill_id)
-    print('cur bill is ----------------> ', bill)
+    if not bill:
+        return json({'success': False, 'message': f'Your do not have bill: {bill_id}'})
+
     product: db.Product = await db.Product.get_by_id(product_id)
     if bill['balance'] < product.price:
         return insufficient_funds()
