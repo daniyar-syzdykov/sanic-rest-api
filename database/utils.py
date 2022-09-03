@@ -18,7 +18,8 @@ class AsyncDatabaseSession:
         port = '5432'
         db_name = 'test_assignment'
         url = f'postgresql+asyncpg://{user}:{password}@{host}:{port}/{db_name}'
-        self._engine = create_async_engine(url, echo=True)
+        # self._engine = create_async_engine(url, echo=True)
+        self._engine = create_async_engine(url)
         self._session = sessionmaker(
             self._engine, expire_on_commit=False, class_=AsyncSession
         )()

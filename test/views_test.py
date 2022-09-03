@@ -55,6 +55,15 @@ async def test_activate_user():
 
 
 @pytest.mark.asyncio
+async def test_auth_user():
+    user = CACHE.get('user', None)
+    username, password = user['username'], user['password']
+    request, response = await sanic_app.asgi_client.patch('/auth', headers=HEADERS, json={'username': username, 'password': password})
+    response_json = json.loads(response.body)
+
+
+
+@pytest.mark.asyncio
 async def test_get_all_users():
     request, response = await sanic_app.asgi_client.get('/api/users', headers=HEADERS)
     response_json = json.loads(response.body)
@@ -69,4 +78,4 @@ async def test_get_all_users_without_permission():
     response_json = json.loads(response.body)
 
     assert request.method.lower() == 'get'
-    assert len(response_json) != 0
+    assert response_json['exception'] == 'Unauthorized'

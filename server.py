@@ -22,4 +22,5 @@ async def init(app):
     await session.create_all()
 
 if __name__ == '__main__':
-    app.run(dev=True)
+    # app.run(dev=True)
+    app.run()

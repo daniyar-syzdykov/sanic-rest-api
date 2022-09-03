@@ -14,12 +14,12 @@ class DBMixin:
     @classmethod
     async def create(cls, **kwargs):
         new_data = cls(**kwargs)
-        session.add(new_data)
+        created = session.add(new_data)
         try:
             await session.commit()
         except IntegrityError:
             await session.rollback()
-            raise BadRequest('User with this credentials already exists')
+            raise BadRequest(f'{cls.__name__} with this credentials already exists')
         finally:
             await session.close()
         return new_data.__dict__

@@ -7,12 +7,12 @@ from .utils import *
 from sanic.exceptions import *
 
 
-# @inject_user()
-# @protected()
+@inject_user()
+@protected()
 async def get_all_users(request, user: db.User = None):
-    # if not user['is_admin'] or not user['is_active']:
-    #     raise Forbidden('You do not have permission to views this page')
-    #     # return json({'success': False, 'message': 'you do not have permission'})
+    if not user['is_admin'] or not user['is_active']:
+        raise Forbidden('You do not have permission to views this page')
+        # return json({'success': False, 'message': 'you do not have permission'})
 
     result = await db.User.get_all_users()
     if not result:

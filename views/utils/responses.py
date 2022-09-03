@@ -1,5 +1,7 @@
 from sanic import json
 from sanic.exceptions import SanicException, BadRequest
+from sanic import HTTPResponse
+from sanic import json
 
 
 
@@ -40,6 +42,7 @@ def purchase_completed():
 
 
 # ERROR http responses
+
 
 def http_not_activated(user_uuid):
     code = 401
