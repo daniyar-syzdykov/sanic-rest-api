@@ -19,7 +19,8 @@ class DBMixin:
             await session.commit()
         except IntegrityError:
             await session.rollback()
-            raise BadRequest(f'{cls.__name__} with this credentials already exists')
+            raise BadRequest(
+                f'{cls.__name__} with this credentials already exists')
         finally:
             await session.close()
         return new_data.__dict__
@@ -132,15 +133,13 @@ class User(Base, DBMixin):
         await cls.update(user_id, refresh_token=refresh_token)
 
     @classmethod
-    async def get_refresh_token(cls, username):
-        query = select(User.refresh_token).where(User.id == id)
+    async def get_refresh_token(cls, user_id):
+        query = select(User.refresh_token).where(User.id == user_id)
         result = await session.execute(query)
         result = result.unique()
         result = result.one_or_none()
         await session.close()
-        if result is None:
-            return None
-        return result[0]
+        return result[0] if result else None
 
 
 class Bill(Base, DBMixin):

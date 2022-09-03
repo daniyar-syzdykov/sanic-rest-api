@@ -5,7 +5,7 @@ from sanic import Sanic, response
 from routes import api
 from sanic_jwt import Initialize
 from database.utils import async_db_session as session
-from views import store_token, get_token, authenticate, retrieve_user
+from views import store_token, get_refresh_token, authenticate, retrieve_user
 from string import ascii_lowercase, digits
 import database as db
 from database.schemas import *
@@ -19,7 +19,7 @@ def init_app():
                authenticate=authenticate,
                refresh_token_enabled=True,
                store_refresh_token=store_token,
-               retrieve_refresh_token=get_token,
+               retrieve_refresh_token=get_refresh_token,
                retrieve_user=retrieve_user
                )
 

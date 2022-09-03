@@ -31,6 +31,12 @@ class UserRegisterSchema(Schema):
     password = fields.String(required=True)
 
 
+class UserAuthSchema(Schema):
+    id = fields.Integer()
+    username = fields.String()
+    uuid = fields.UUID()
+
+
 
 class ProductSchema(Schema):
     id = fields.Integer(required=True)
@@ -45,3 +51,4 @@ user_register_schema = UserRegisterSchema()
 bill_schema = BillSchema()
 transaction_schema = TransactionSchema()
 product_schema = ProductSchema()
+user_auth_schema = UserAuthSchema()
