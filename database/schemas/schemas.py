@@ -37,7 +37,6 @@ class UserAuthSchema(Schema):
     uuid = fields.UUID()
 
 
-
 class ProductSchema(Schema):
     id = fields.Integer(required=True)
     uuid = fields.UUID(required=True)

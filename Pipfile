@@ -17,6 +17,8 @@ pytest = "*"
 sanic-testing = "*"
 pytest-asyncio = "*"
 greenlet = "*"
+aiohttp = "*"
+pycrypto = "*"
 
 [dev-packages]
 

@@ -80,6 +80,7 @@ class User(Base, DBMixin):
                                    ))
     is_active = Column(Boolean(), default=False)
     is_admin = Column(Boolean(), default=False)
+    access_token = Column(Text())
     refresh_token = Column(Text())
     bills = relationship('Bill', backref='users', cascade='all, delete')
 
@@ -129,12 +130,17 @@ class User(Base, DBMixin):
         await session.close()
 
     @classmethod
-    async def store_token(cls, request, user_id, refresh_token):
-        await cls.update(user_id, refresh_token=refresh_token)
+    async def get_refresh_tokens(cls, user_id):
+        query = select(User.refresh_token).where(User.id == user_id)
+        result = await session.execute(query)
+        result = result.unique()
+        result = result.one_or_none()
+        await session.close()
+        return result[0] if result else None
 
     @classmethod
-    async def get_refresh_token(cls, user_id):
-        query = select(User.refresh_token).where(User.id == user_id)
+    async def get_access_token(cls, user_id):
+        query = select(User.access_token).where(User.id == user_id)
         result = await session.execute(query)
         result = result.unique()
         result = result.one_or_none()
@@ -160,6 +166,7 @@ class Bill(Base, DBMixin):
         result = [i[0] for i in result.all()]
         return result
 
+    @classmethod
     async def get_bill_by_id(cls, id):
         query = select(Bill).where(
             Bill.id == id).options(joinedload(Bill.transactions))

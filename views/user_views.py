@@ -24,7 +24,7 @@ async def get_all_users(request, user: db.User = None):
 
 @inject_user()
 @protected()
-async def get_user_by_id(requset, user_id, user: db.User=None):
+async def get_user_by_id(requset, user_id, user: db.User = None):
     if user['id'] == user_id and not user['is_active']:
         return http_not_activated(user['uuid'])
 
@@ -53,7 +53,7 @@ async def create_user(request: Request):
     await db.Transaction.create(bill_id=bill_id)
 
     user_uuid = result['uuid']
-    
+
     return http_created({'activation_link': f'http://127.0.0.1:8000/api/users/activate/{user_uuid}'})
 
 

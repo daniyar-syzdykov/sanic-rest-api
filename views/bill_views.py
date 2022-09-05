@@ -1,3 +1,5 @@
+import aiohttp
+from Crypto.Hash import SHA
 import database as db
 from database.schemas import bill_schema
 from sanic import json, Request
@@ -28,6 +30,18 @@ async def get_all_bills(request):
     return json(ret)
 
 
+async def paymen_webhook(user_id, bill_id, transaction_id, amount):
+    private_key = 'private_key'
+    signature = SHA.new(f'{private_key}:{transaction_id}:{bill_id}:{amount}'.encode()).hexdigest()
+    body = {'signature': signature,
+                    'user_id': user_id,
+                    'bill_id': bill_id,
+                    'amount': amount,
+                }
+    async with aiohttp.ClientSession() as session:
+        await session.post('http://127.0.0.1:5000/payment/webhook', json=body)
+    
+
 async def add_funds(request):
     user_id = request.json.get('user_id', None)
     bill_id = request.json.get('bill_id', None)
@@ -40,7 +54,8 @@ async def add_funds(request):
     if not amount:
         raise BadRequest('Pls provice amount')
 
-    bill: db.Bill = await db.Bill.get_by_id(bill_id)
+    bill: db.Bill = await db.Bill.get_bill_by_id(bill_id)
+    bill = bill_schema.dump(bill)
     if not bill:
         print('creating new bill')
         bill = await db.Bill.create(user_id=user_id)
@@ -48,5 +63,7 @@ async def add_funds(request):
 
     balance = bill['balance'] + amount
     await db.Bill.update(bill_id, balance=balance)
-    await db.Transaction.create(transfered=amount, bill_id=bill_id)
+    result = await db.Transaction.create(transfered=amount, bill_id=bill_id)
+    transaction_id = result['id']
+    await paymen_webhook(user_id=user_id, bill_id=bill_id, transaction_id=transaction_id, amount=amount)
     return json({'success': True, 'message': f'Transfered: {amount}'})
