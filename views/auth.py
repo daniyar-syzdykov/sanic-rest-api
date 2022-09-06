@@ -1,10 +1,7 @@
-import jwt
 import uuid
 import database as db
-from sanic import Sanic
 from sanic.request import Request
-from sanic_jwt import exceptions as jwt_exceptions, BaseEndpoint, Responses
-from sanic_jwt.endpoints import RefreshEndpoint
+from sanic_jwt import exceptions as jwt_exceptions, Responses
 from database.schemas import user_auth_schema
 from sanic.exceptions import *
 
@@ -32,7 +29,6 @@ async def authenticate(request: Request):
 
 
 async def store_token(request, user_id, refresh_token):
-    print('store refresh token was called')
     await db.User.update(user_id, refresh_token=refresh_token)
 
 
@@ -46,24 +42,23 @@ async def generate_refresh_token():
 
 
 async def retrieve_user(request: Request, payload, *args, **kwargs):
-    if payload:
-        user_id = payload.get('user_id', None)
-        user = await db.User.get_user_by_id(user_id)
-        user_json = user_auth_schema.dump(user)
-        user_json['user_id'] = user_json['id']
-        return user_json
-    return None
+    if not payload:
+        return None
+    user_id = payload.get('user_id', None)
+    user = await db.User.get_user_by_id(user_id)
+    user_json = user_auth_schema.dump(user)
+    user_json['user_id'] = user_json['id']
+    return user_json
 
 
 class CustomResponses(Responses):
     @staticmethod
     async def extend_refresh(request, user=None, access_token=None, refresh_token=None, purported_token=None, payload=None):
-        user_access_token = await db.User.get_access_token(user['user_id'])
         user_refresh_token = await db.User.get_refresh_tokens(user['user_id'])
-        print(user_access_token, access_token)
         if user_refresh_token == refresh_token:
             new_refresh_token = uuid.uuid4().hex
-            await db.User.update(user['user_id'], access_token=access_token)
             await db.User.update(user['user_id'], refresh_token=new_refresh_token)
             return {"refresh_token": new_refresh_token}
-        raise jwt_exceptions.AuthenticationFailed('This refresh token has been expired')
+
+        raise jwt_exceptions.AuthenticationFailed(
+            'This refresh token has been expired')

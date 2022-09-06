@@ -4,6 +4,7 @@ import database as db
 from database.schemas import bill_schema
 from sanic import json, Request
 from sanic.exceptions import BadRequest
+from config import PRIVATE_KEY
 
 
 async def create_bill(requset: Request):
@@ -31,8 +32,7 @@ async def get_all_bills(request):
 
 
 async def paymen_webhook(user_id, bill_id, transaction_id, amount):
-    private_key = 'private_key'
-    signature = SHA.new(f'{private_key}:{transaction_id}:{bill_id}:{amount}'.encode()).hexdigest()
+    signature = SHA.new(f'{PRIVATE_KEY}:{transaction_id}:{bill_id}:{amount}'.encode()).hexdigest()
     body = {'signature': signature,
                     'user_id': user_id,
                     'bill_id': bill_id,
@@ -47,12 +47,8 @@ async def add_funds(request):
     bill_id = request.json.get('bill_id', None)
     amount = request.json.get('amount', None)
 
-    if not bill_id:
-        raise BadRequest('Pls provice bill_id')
-    if not user_id:
-        raise BadRequest('Pls provice user_id')
-    if not amount:
-        raise BadRequest('Pls provice amount')
+    if not bill_id or not user_id or not amount:
+        raise BadRequest('Pls provice valid data')
 
     bill: db.Bill = await db.Bill.get_bill_by_id(bill_id)
     bill = bill_schema.dump(bill)
